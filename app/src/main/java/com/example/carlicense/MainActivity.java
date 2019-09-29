@@ -2,23 +2,22 @@ package com.example.carlicense;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import androidx.annotation.NonNull;
-import androidx.core.view.GravityCompat;
-import com.example.carlicense.ui.about.AboutFragment;
-import com.example.carlicense.ui.home.HomeFragment;
-import com.example.carlicense.ui.settings.SettingsFragment;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import com.example.carlicense.ui.about.AboutFragment;
+import com.example.carlicense.ui.home.HomeFragment;
+import com.example.carlicense.ui.settings.SettingsFragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import androidx.drawerlayout.widget.DrawerLayout;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     boolean camera_play = false;
