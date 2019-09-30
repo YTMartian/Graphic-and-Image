@@ -29,8 +29,8 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:layout_marginLeft="220dp"
+            android:layout_marginTop="280dp"
             android:layout_marginRight="0dp"
-            android:layout_marginTop="450dp"
             android:visibility="visible"
             app:menu_animationDelayPerItem="50"
             app:menu_backgroundColor="@android:color/transparent"
@@ -38,7 +38,7 @@
             app:menu_colorNormal="#DA4336"
             app:menu_colorPressed="#E75043"
             app:menu_colorRipple="#99FFFFFF"
-            app:menu_fab_label="操作"
+            app:menu_fab_label=""
             app:menu_fab_size="normal"
             app:menu_icon="@drawable/fab_add"
             app:menu_labels_colorNormal="#333333"
@@ -68,19 +68,23 @@
             app:menu_showShadow="true">
 
         <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/menu_item_1"
+                android:id="@+id/open_camera"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_add"
-                app:fab_label="进入"
-                app:fab_size="mini" />
+                android:src="@drawable/ic_camera_play"
+                app:fab_label="开始"
+                app:fab_size="normal"
+                android:onClick="clickOpenCamera"/>
+
         <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/menu_item_2"
+                android:id="@+id/get_in"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_add"
-                app:fab_label="离开"
-                app:fab_size="mini" />
+                android:src="@drawable/ic_get_in"
+                app:fab_label="进入"
+                app:fab_size="normal"
+                android:onClick="clickGetIn"/>
+
 
     </com.github.clans.fab.FloatingActionMenu>
 

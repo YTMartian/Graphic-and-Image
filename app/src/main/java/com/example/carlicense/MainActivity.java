@@ -1,5 +1,6 @@
 package com.example.carlicense;
 
+import android.graphics.Camera;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,11 +17,13 @@ import com.example.carlicense.ui.about.AboutFragment;
 import com.example.carlicense.ui.home.HomeFragment;
 import com.example.carlicense.ui.settings.SettingsFragment;
 import com.github.clans.fab.FloatingActionMenu;
+import com.github.clans.fab.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    boolean camera_play = false;
+    boolean camera_is_play = false;
+    boolean is_get_in=false;
+    Camera camera;
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -30,16 +33,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionMenu menu = findViewById(R.id.menu);
-        //监听按钮
-        menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, camera_play ? "Pause" : "Start", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                camera_play = !camera_play;
-            }
-        });
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -89,6 +83,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    //点击open_camera按钮
+    public void clickOpenCamera(View view) {
+        FloatingActionButton button = findViewById(R.id.open_camera);
+        //更改按钮图标和文字
+        if (camera_is_play) {
+            button.setImageResource(R.drawable.ic_camera_play);
+            button.setLabelText("开始");
+        } else {
+            button.setImageResource(R.drawable.ic_camera_stop);
+            button.setLabelText("停止");
+        }
+        camera_is_play = !camera_is_play;
+    }
+
+    //点击get_in按钮
+    public void clickGetIn(View view) {
+        FloatingActionButton button = findViewById(R.id.get_in);
+        //更改按钮图标和文字
+        if (is_get_in) {
+            button.setImageResource(R.drawable.ic_get_in);
+            button.setLabelText("进入");
+        } else {
+            button.setImageResource(R.drawable.ic_get_out);
+            button.setLabelText("离开");
+        }
+        is_get_in = !is_get_in;
     }
 
 }
