@@ -15,7 +15,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.carlicense.ui.about.AboutFragment;
 import com.example.carlicense.ui.home.HomeFragment;
 import com.example.carlicense.ui.settings.SettingsFragment;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -30,9 +30,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionMenu menu = findViewById(R.id.menu);
         //监听按钮
-        fab.setOnClickListener(new View.OnClickListener() {
+        menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, camera_play ? "Pause" : "Start", Snackbar.LENGTH_LONG)
@@ -67,20 +67,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //点击不同导航按钮的事件
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionMenu menu = findViewById(R.id.menu);
         switch (menuItem.getItemId()) {
             case R.id.nav_home:
-                fab.show();
+                menu.showMenu(true);
+                //放入HomeFragment.
                 getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,
                         new HomeFragment()).commit();
                 break;
             case R.id.nav_settings:
-                fab.hide();
+                menu.hideMenu(true);
                 getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,
                         new SettingsFragment()).commit();
                 break;
             case R.id.nav_about:
-                fab.hide();
+                menu.hideMenu(true);
                 getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,
                         new AboutFragment()).commit();
                 break;

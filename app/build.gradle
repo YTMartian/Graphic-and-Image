@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    lintOptions {
+    lintOptions {//取消某个初始化，否则build很久直到失败...
         checkReleaseBuilds false
         abortOnError false
     }
@@ -34,4 +34,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'com.github.clans:fab:1.6.4'
 }
