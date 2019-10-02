@@ -8,10 +8,62 @@
     <title>HOME</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/button.css' %}">
+    <script src="{% static 'js/jquery-1.10.2.js' %}"></script>
 </head>
-<body>
+<body style="overflow: hidden">
+<video id="video" width="640" height="480" autoplay></video>
+<canvas id="canvas" width="640" height="480"></canvas>
+<div id="test">
+
+</div>
 
 <script>
+    var video = document.getElementById('video');
+
+    //访问摄像头
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // 添加音频{ audio: true }
+        navigator.mediaDevices.getUserMedia({video: true}).then(function (stream) {
+            video.srcObject = stream;
+            video.play();
+        });
+    }
+    // 一帧图片
+    let canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+
+    //处理一帧图像
+    function handleOneFrame() {
+        context.drawImage(video, 0, 0, 640, 480);
+        var imageData = canvas.toDataURL("jpeg");//直接将canvas中的内容转为base64格式，
+        var request = $.ajax({
+            url: 'http://127.0.0.1:8000/system/handle/',//最后要加上'/'
+            type: 'POST',
+            data: {'image': imageData},
+            async: true,
+            timeout: 7000,
+            error: function () {
+                window.alert("出错了")
+            },
+            complete: function (XMLHttpRequest, status) {
+                if (status === 'timeout') {
+                    request.abort();
+                    window.alert('连接超时')
+                }
+            },
+            success: function () {
+                let data = request.responseText;//此data为base64格式
+                $('#canvas').html('<img src="' + data + '">')//直接用img展示
+            }
+        });
+    }
+
+    function handleFrames() {
+        window.setInterval("handleOneFrame()", 33)//每隔33ms执行一次函数
+    }
+
+    window.onload = handleFrames
+
 
 </script>
 </body>

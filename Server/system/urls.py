@@ -6,5 +6,6 @@ from django.conf.urls.static import static
 urlpatterns = [
     url(r'^index/$', views.index, name = 'index'),
     url(r'^print/$', views.print_, name = 'print'),
+    url(r'^handle/$', views.handle, name = 'handle'),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

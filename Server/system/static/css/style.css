@@ -12,8 +12,12 @@ video {
     -webkit-box-shadow: 15px 9px 61px 1px rgba(0, 0, 0, 0.54);
     -moz-box-shadow: 15px 9px 61px 1px rgba(0, 0, 0, 0.54);
     box-shadow: 15px 9px 61px 1px rgba(0, 0, 0, 0.54);
+    margin-left: 6%;
+    margin-top: 5%;
+    border: 10px solid #fff9fc;
 }
 
-.video-box {
-    margin: 0 auto;
+canvas {
+    margin-left: 1%;
+    border: 10px solid #fff9fc;
 }
