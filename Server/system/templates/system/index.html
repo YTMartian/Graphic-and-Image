@@ -12,13 +12,10 @@
 </head>
 <body style="overflow: hidden">
 <video id="video" width="640" height="480" autoplay></video>
-<canvas id="canvas" width="640" height="480"></canvas>
-<div id="test">
-
-</div>
-
+<img id="show-image" width="640" height="480">
+<canvas id="canvas" width="640" height="480" style="visibility: hidden"></canvas>
 <script>
-    var video = document.getElementById('video');
+    const video = document.getElementById('video');
 
     //访问摄像头
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -28,15 +25,15 @@
             video.play();
         });
     }
-    // 一帧图片
-    let canvas = document.getElementById('canvas');
-    var context = canvas.getContext('2d');
 
     //处理一帧图像
     function handleOneFrame() {
+        // 一帧图片
+        let canvas = document.getElementById('canvas');
+        let context = canvas.getContext('2d');
         context.drawImage(video, 0, 0, 640, 480);
-        var imageData = canvas.toDataURL("jpeg");//直接将canvas中的内容转为base64格式，
-        var request = $.ajax({
+        let imageData = canvas.toDataURL("png");//直接将canvas中的内容转为base64格式，
+        let request = $.ajax({
             url: 'http://127.0.0.1:8000/system/handle/',//最后要加上'/'
             type: 'POST',
             data: {'image': imageData},
@@ -52,8 +49,9 @@
                 }
             },
             success: function () {
-                let data = request.responseText;//此data为base64格式
-                $('#canvas').html('<img src="' + data + '">')//直接用img展示
+                let data = request.responseText;
+                $('#show-image').attr('src', "data:image/png;base64," + data);
+                {#$('#show-image').html('<img src="data:image/png;base64,' + data + '">')//直接用img展示#}
             }
         });
     }
