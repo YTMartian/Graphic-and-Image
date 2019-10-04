@@ -13,4 +13,5 @@ IMPLEMENTED IN PYTHON, INCLUDING FRONT-END WEB FOR ADMINISTRATOR AND PROCESSING 
 
 # SUPPORT
 
-USE [YOLO: Real-Time Object Detection](https://github.com/qqwweee/keras-yolo3) TO DETECT LICENSE PLATE.
+- USE [YOLO: Real-Time Object Detection](https://github.com/qqwweee/keras-yolo3) TO DETECT LICENSE PLATE.
+- USE [LabelImg](https://github.com/tzutalin/labelImg) TO LABEL LICENSE PLATE.
