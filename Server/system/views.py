@@ -19,6 +19,7 @@ def handle(request):
     data = request.POST.get('image')
     img = base64_to_cv2(data)
     img = cv2.line(img, (0, 0), (len(img[0]), len(img)), (0, 0, 255), 5)
+    img = cv2.line(img, (len(img[0]), 0), (0, len(img)), (0, 0, 255), 5)
     # cv2 image转base64
     nothing, buffer = cv2.imencode('.png', img)
     data = base64.b64encode(buffer)
@@ -31,3 +32,7 @@ def base64_to_cv2(uri):
     np_arr = np.fromstring(base64.b64decode(encoded_data), np.uint8)
     img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
     return img
+
+# 对于第一帧有车牌的图像，识别之，并设置相关标记变量；
+# 对于之后的图像，如果仍然有车牌，直接标注为上一帧图像的车牌号；
+# 直到出现不含车牌的图像，重置相关标记变量

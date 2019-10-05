@@ -1,0 +1,26 @@
+<annotation>
+	<folder>JPEGImages</folder>
+	<filename>000001.jpg</filename>
+	<path>F:\Comprehensive-Practice\Graphic-and-Image\yolo-v3\VOC2007\JPEGImages\000001.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>400</width>
+		<height>300</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>license_plate</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>121</xmin>
+			<ymin>170</ymin>
+			<xmax>221</xmax>
+			<ymax>199</ymax>
+		</bndbox>
+	</object>
+</annotation>
