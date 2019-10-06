@@ -40,12 +40,12 @@
             async: true,
             timeout: 7000,
             error: function () {
-                window.alert("出错了")
+                {#window.alert("出错了")#}
             },
             complete: function (XMLHttpRequest, status) {
                 if (status === 'timeout') {
                     request.abort();
-                    window.alert('连接超时')
+                    {#window.alert('连接超时')#}
                 }
             },
             success: function () {

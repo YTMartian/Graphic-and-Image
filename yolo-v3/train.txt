@@ -1,2 +1,0 @@
-F:\Comprehensive-Practice\Graphic-and-Image\yolo-v3/VOC2007/JPEGImages/000002.jpg 177,286,300,326,0
-F:\Comprehensive-Practice\Graphic-and-Image\yolo-v3/VOC2007/JPEGImages/000003.jpg 172,190,270,225,0

@@ -2,6 +2,7 @@
 Retrain the YOLO model for your own dataset.
 """
 
+import os
 import numpy as np
 import keras.backend as K
 from keras.layers import Input, Lambda
@@ -13,7 +14,8 @@ from yolo3.model import preprocess_true_boxes, yolo_body, tiny_yolo_body, yolo_l
 from yolo3.utils import get_random_data
 
 
-# os.environ['CUDA_VISIBLE_DEVICES'] = '-1' #不用GPU
+os.environ['CUDA_VISIBLE_DEVICES'] = '0' #不用'-1'/使用一个GPU'0'
+
 
 def _main():
     annotation_path = 'train.txt'
@@ -56,7 +58,7 @@ def _main():
             # use custom yolo_loss Lambda layer.
             'yolo_loss': lambda y_true, y_pred: y_pred})
 
-        batch_size = 32 #电脑好可以修改大点，默认32
+        batch_size = 1 #电脑好可以修改大点，默认32
         print('Train on {} samples, val on {} samples, with batch size {}.'.format(num_train, num_val, batch_size))
         model.fit_generator(data_generator_wrapper(lines[:num_train], batch_size, input_shape, anchors, num_classes),
                 steps_per_epoch=max(1, num_train//batch_size),
@@ -75,7 +77,7 @@ def _main():
         model.compile(optimizer=Adam(lr=1e-4), loss={'yolo_loss': lambda y_true, y_pred: y_pred}) # recompile to apply the change
         print('Unfreeze all of the layers.')
 
-        batch_size = 32 # note that more GPU memory is required after unfreezing the body
+        batch_size = 1 # note that more GPU memory is required after unfreezing the body
         print('Train on {} samples, val on {} samples, with batch size {}.'.format(num_train, num_val, batch_size))
         model.fit_generator(data_generator_wrapper(lines[:num_train], batch_size, input_shape, anchors, num_classes),
             steps_per_epoch=max(1, num_train//batch_size),
