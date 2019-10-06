@@ -15,8 +15,10 @@ IMPLEMENTED IN PYTHON, INCLUDING FRONT-END WEB FOR ADMINISTRATOR AND PROCESSING 
 
 - USE [YOLO: Real-Time Object Detection](https://github.com/qqwweee/keras-yolo3) TO DETECT LICENSE PLATE.
 - USE [LabelImg](https://github.com/tzutalin/labelImg) TO LABEL LICENSE PLATE.
+- ALSO USE [HyperLPR](https://github.com/zeusees/HyperLPR) TO DETECT LICENSE PLATE.
 - PYTHON 3.6.5
-- TENSORFLOW 1.6.0
+- TENSORFLOW-GPU 1.6.0
 - KERAS 2.1.5
 - CUDA 9.0
-- CUDNN 7
+- CUDNN v7.0.5
+- NUMPY 1.14.3
