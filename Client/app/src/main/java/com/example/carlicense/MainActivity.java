@@ -1,6 +1,5 @@
 package com.example.carlicense;
 
-import android.graphics.Camera;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,9 +20,7 @@ import com.github.clans.fab.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    boolean camera_is_play = false;
     boolean is_get_in=false;
-    Camera camera;
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -85,18 +82,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    //点击open_camera按钮
+    //点击history按钮
     public void clickOpenCamera(View view) {
-        FloatingActionButton button = findViewById(R.id.open_camera);
-        //更改按钮图标和文字
-        if (camera_is_play) {
-            button.setImageResource(R.drawable.ic_camera_play);
-            button.setLabelText("开始");
-        } else {
-            button.setImageResource(R.drawable.ic_camera_stop);
-            button.setLabelText("停止");
-        }
-        camera_is_play = !camera_is_play;
+
     }
 
     //点击get_in按钮
