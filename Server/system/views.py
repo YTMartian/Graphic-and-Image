@@ -25,8 +25,6 @@ def handle(request):
     global result
     data = request.POST.get('image')
     img = base64_to_cv2(data)
-    # img = cv2.line(img, (0, 0), (len(img[0]), len(img)), (0, 0, 255), 5)
-    # img = cv2.line(img, (len(img[0]), 0), (0, len(img)), (0, 0, 255), 5)
     res = HyperLPR_PlateRecogntion(img)
     if len(res) > 0:
         result = res[0]
