@@ -53,7 +53,7 @@ def addChineseText(img, text, x, y, thickness):
     # 图像从OpenCV格式转换成PIL格式
     img_PIL = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     # 字体位于：C:\Windows\Fonts
-    font = ImageFont.truetype('STXIHEI.TTF', thickness)
+    font = ImageFont.truetype('simhei.ttf', thickness)
     draw = ImageDraw.Draw(img_PIL)
     draw.text((x, y), text, font = font, fill = (255, 255, 255))
     # 转换回OpenCV格式
