@@ -6,6 +6,9 @@ import base64
 import numpy as np
 from hyperlpr import *
 from PIL import Image, ImageDraw, ImageFont
+from . import models
+import datetime
+import json
 
 
 def index(request):
@@ -14,6 +17,36 @@ def index(request):
 
 def print_(request):
     return render(request, 'system/print.html')
+
+
+@csrf_exempt
+def get_history(request):
+    username = str(request.POST.get('username'))
+    license_plate = str(request.POST.get('license_plate'))
+    start = str(request.POST.get('start'))
+    end = str(request.POST.get('end'))
+    histories = models.History.objects.all()
+    res = []
+    temp = {}
+    for history in histories:
+        # 看查询项是否非空及符合
+        if username != '' and str(history.name) != username:
+            continue
+        if license_plate != '' and str(history.license_plate) != license_plate:
+            continue
+        if start != '' and str(history.time + datetime.timedelta(hours = 8))[:10] < start:
+            continue
+        if end != '' and str(history.time + datetime.timedelta(hours = 8))[:10] > end:
+            continue
+        temp['用户名'] = str(history.name)
+        temp['车牌号'] = str(history.license_plate)
+        temp['车型'] = str(history.type)
+        temp['状态'] = '离开' if history.state else '进入'
+        temp['时间'] = str(history.time + datetime.timedelta(hours = 8))[:19]
+        temp['收费'] = str(history.price)
+        res.append(temp.copy())
+    res = json.dumps(res, ensure_ascii = False, indent = 4)
+    return HttpResponse(res)
 
 
 # 存放当前检测结果

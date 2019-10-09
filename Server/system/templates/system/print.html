@@ -11,27 +11,31 @@
 </head>
 <body>
 <div id="header">
-    <div class="input">
-        <button class="button button-normal button-plain button-border">用户名</button>
-        <input id='username' type='text'/>
-        <button class="button button-normal button-plain button-border">车牌号</button>
-        <input id='license-plate' type='text'/>
-        <button class="button button-normal button-plain button-border">开始日期</button>
-        <input id='date1' type='text'/>
-        <button class="button button-normal button-plain button-border">结束日期</button>
-        <input id='date2' type='text'/>
-        <span class="button-wrap">
-        <a class="button button-caution button-pill button-normal">查询</a>
+    <div class="header-content">
+        <div class="input">
+            <button class="button button-normal button-plain button-border">用户名</button>
+            <input id='username' type='text'/>
+            <button class="button button-normal button-plain button-border">车牌号</button>
+            <input id='license-plate' type='text'/>
+            <button class="button button-normal button-plain button-border">开始日期</button>
+            <input id='date1' type='text'/>
+            <button class="button button-normal button-plain button-border">结束日期</button>
+            <input id='date2' type='text'/>
+            <span class="button-wrap">
+        <a class="button button-caution button-pill button-normal" onclick="find()">查询</a>
     </span>
+        </div>
     </div>
 </div>
-<h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br>
-<h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br>
-<h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br>
-<h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br>
+
+{#插入数据部分#}
+<div id="insert-table">
+
+</div>
+
 <script src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
 <script src="{% static 'js/dcalendar.picker.js' %}"></script>
-<script src="{% static 'js/input.js' %}"></script>
+<script src="{% static 'js/print.js' %}"></script>
 <script type="text/javascript">
     $('#date1').dcalendarpicker({
         format: 'yyyy-mm-dd'
@@ -39,6 +43,66 @@
     $('#date2').dcalendarpicker({
         format: 'yyyy-mm-dd'
     });
+</script>
+<script>
+    function strToJson(str) {
+        return eval('(' + str + ')');
+    }
+
+    //Ajax 查询
+    function find() {
+        let username = $('#username').val();
+        let license_plate = $('#license-plate').val();
+        let start = $('#date1').val();
+        let end = $('#date2').val();
+        let request = $.ajax({
+            url: '/system/get_history/',//POST最后要加斜杠 /
+            data: {'username': username, 'license_plate': license_plate, 'start': start, 'end': end},
+            type: 'POST',
+            async: true,
+            timeout: 7000,
+            error: function () {
+                window.alert("😫出错了😫")
+            },
+            complete: function (XMLHttpRequest, status) {
+                if (status === 'timeout') {
+                    request.abort();
+                    window.alert('请求超时了...')
+                }
+            },
+            success: function () {
+                let json = strToJson(request.responseText);
+                let data = '<table style="margin-left: 20%">\n' +
+                    '        <tr class="tr-style">\n' +
+                    '            <th>用户名</th>\n' +
+                    '            <th>车牌号</th>\n' +
+                    '            <th>车型</th>\n' +
+                    '            <th>状态</th>\n' +
+                    '            <th>时间</th>\n' +
+                    '            <th>收费</th>\n' +
+                    '        </tr>';
+                for (let i = 0, l = json.length; i < l; i++) {
+                    data += '<tr class="tr-style">';
+                    for (let key in json[i]) {
+                        data += '<td>' + json[i][key] + '</td>';
+                    }
+                    data += '</tr>';
+                }
+                data += '</table>';
+                $("#insert-table").html(data)
+            }
+        });
+    }
+
+    //键盘事件
+    function keyDown(e) {
+        let keycode = e.which;   //取得对应的键值（数字）
+        if (keycode === 80) {
+            $("#insert-table").printArea();
+        }
+    }
+
+    document.onkeydown = keyDown
 </script>
 </body>
 </html>

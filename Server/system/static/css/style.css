@@ -22,54 +22,55 @@ video {
     border: 10px solid #fff9fc;
 }
 
-#table {
-    width: 1200px;
-    margin: 40px auto 0;
+#insert-table table {
     border-collapse: collapse;
-    background-color: #fff;
+    margin-top: -3%;
+    margin-right: -10%;
+    background: #fff;
+    width: 60%;
+
 }
 
-#table td,
-#table th {
-    padding: 0.75em 1.5em;
+#insert-table td, th {
+    padding: .75em 1.5em;
+    text-align: left
 }
 
-#table thead {
+#insert-table td.err {
+    background-color: #e992b9;
     color: #fff;
+    font-size: .75em;
+    text-align: center;
+    line-height: 1
+}
+
+#insert-table th {
     background-color: #31bc86;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap
 }
 
-#table thead th {
-    text-align: left;
+#insert-table tbody th {
+    background-color: #2ea879
 }
 
-#table tbody {
+#insert-table tbody tr:nth-child(2n-1) {
+    background-color: #f5f5f5;
+    transition: all .125s ease-in-out
 }
 
-#table tbody tr {
-    border-bottom: 2px dashed #000;
-    cursor: default;
-    transition: all .125s ease-in-out;
+#insert-table tbody tr:hover {
+    background-color: rgba(129, 208, 177, .3)
 }
 
-#table tbody tr:hover {
-    /*background-color: rgba(129,208,177,.3);*/
+#insert-table h3 {
+    color: #ffffff;
+    font-size: 2.0em;
 }
 
-#table tbody tr.event-bgColor {
-    background-color: rgba(255, 192, 203, .2);
-}
-
-#table tbody tr.default-bgColor {
-    background-color: #fff;
-}
-
-#table tbody tr.hover-bgColor {
-    background-color: rgba(255, 192, 203, .8);
-}
-
-#table tbody tr.selected-bgColor {
-    background-color: rgb(255, 192, 203);
+.tr-style {
+    text-align: center;
 }
 
 .calendar {
@@ -199,11 +200,35 @@ input[type=text]:focus {
 }
 
 .input {
-    margin-top: 2%;
-    margin-left: 5%;
+    margin-top: -1%;
+    margin-left: -10%;
     position: fixed;
 }
-#header{
-    background-color: #ffffff;
+
+#header {
+    margin-left: -1%;
+    background-image: url("../images/background.svg");
     box-shadow: 0px 10px 19px 0px rgba(0, 0, 0, 0.2), 0px 3px 20px 0px rgba(0, 0, 0, 0.19);
+}
+
+#header {
+    position: fixed;
+    margin-top: -3%;
+    width: 110%;
+    z-index: 999;
+}
+
+#header .header-content {
+    margin: 0 auto;
+    max-width: 1170px;
+    padding: 60px 0;
+    width: 100%;
+    -moz-transition: padding 0.3s;
+    -o-transition: padding 0.3s;
+    -webkit-transition: padding 0.3s;
+    transition: padding 0.3s;
+}
+
+#insert-table {
+    padding-top: 200px;
 }

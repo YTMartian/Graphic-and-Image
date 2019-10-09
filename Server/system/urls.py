@@ -7,5 +7,6 @@ urlpatterns = [
     url(r'^index/$', views.index, name = 'index'),
     url(r'^print/$', views.print_, name = 'print'),
     url(r'^handle/$', views.handle, name = 'handle'),
+    url(r'^get_history/$', views.get_history, name = 'get_history'),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
