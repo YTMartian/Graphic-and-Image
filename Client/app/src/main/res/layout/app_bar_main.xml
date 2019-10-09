@@ -71,11 +71,11 @@
             app:menu_showShadow="true">
 
         <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/open_camera"
+                android:id="@+id/history"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_camera_play"
-                app:fab_label="开始"
+                android:src="@drawable/ic_history"
+                app:fab_label="记录"
                 app:fab_size="normal"
                 android:onClick="clickOpenCamera"/>
 

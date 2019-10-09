@@ -25,8 +25,6 @@ def handle(request):
     global result
     data = request.POST.get('image')
     img = base64_to_cv2(data)
-    # img = cv2.line(img, (0, 0), (len(img[0]), len(img)), (0, 0, 255), 5)
-    # img = cv2.line(img, (len(img[0]), 0), (0, len(img)), (0, 0, 255), 5)
     res = HyperLPR_PlateRecogntion(img)
     if len(res) > 0:
         result = res[0]
@@ -62,7 +60,7 @@ def add_chinese_text(img, text, x, y, thickness):
     # 图像从OpenCV格式转换成PIL格式
     img_PIL = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     # 字体位于：C:\Windows\Fonts
-    font = ImageFont.truetype('STXIHEI.TTF', thickness)
+    font = ImageFont.truetype('simhei.ttf', thickness)
     draw = ImageDraw.Draw(img_PIL)
     draw.text((x, y), text, font = font, fill = (255, 255, 255))
     # 转换回OpenCV格式

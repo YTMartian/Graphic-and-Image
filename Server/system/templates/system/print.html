@@ -2,14 +2,43 @@
 {% load staticfiles %}
 <html lang="en">
 <head>
-    <meta name="baidu-site-verification" content="4j1Ctek6Sd"/>
     <meta charset="UTF-8" http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="icon" href="{% static 'fonts/label.ico' %}" type="image/x-icon">
     <title>PRINT</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/button.css' %}">
+    <script src="{% static 'js/jquery-1.10.2.js' %}"></script>
 </head>
 <body>
-<h1>打印</h1>
+<div id="header">
+    <div class="input">
+        <button class="button button-normal button-plain button-border">用户名</button>
+        <input id='username' type='text'/>
+        <button class="button button-normal button-plain button-border">车牌号</button>
+        <input id='license-plate' type='text'/>
+        <button class="button button-normal button-plain button-border">开始日期</button>
+        <input id='date1' type='text'/>
+        <button class="button button-normal button-plain button-border">结束日期</button>
+        <input id='date2' type='text'/>
+        <span class="button-wrap">
+        <a class="button button-caution button-pill button-normal">查询</a>
+    </span>
+    </div>
+</div>
+<h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br>
+<h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br>
+<h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br>
+<h1>fdfd</h1><br><h1>fdfd</h1><br><h1>fdfd</h1><br>
+<script src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
+<script src="{% static 'js/dcalendar.picker.js' %}"></script>
+<script src="{% static 'js/input.js' %}"></script>
+<script type="text/javascript">
+    $('#date1').dcalendarpicker({
+        format: 'yyyy-mm-dd'
+    });
+    $('#date2').dcalendarpicker({
+        format: 'yyyy-mm-dd'
+    });
+</script>
 </body>
 </html>
