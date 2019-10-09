@@ -37,3 +37,17 @@ class UserPlate(models.Model):
     
     class Meta:
         ordering = ['-name']
+
+
+class PriceStandard(models.Model):
+    area = models.CharField('地区', max_length = 20, blank = False)
+    provinces = models.CharField('省份', max_length = 100, blank = False)
+    first_hour_price = models.FloatField('首小时价格', blank = True, default = 0.0)
+    day_time_price = models.FloatField('日间价格', blank = True, default = 0.0)
+    night_time_price = models.FloatField('夜间价格', blank = True, default = 0.0)
+    
+    def __str__(self):
+        return self.area
+    
+    class Meta:
+        ordering = ['-area']
