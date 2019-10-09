@@ -21,3 +21,189 @@ video {
     margin-left: 1%;
     border: 10px solid #fff9fc;
 }
+
+#table {
+    width: 1200px;
+    margin: 40px auto 0;
+    border-collapse: collapse;
+    background-color: #fff;
+}
+
+#table td,
+#table th {
+    padding: 0.75em 1.5em;
+}
+
+#table thead {
+    color: #fff;
+    background-color: #31bc86;
+}
+
+#table thead th {
+    text-align: left;
+}
+
+#table tbody {
+}
+
+#table tbody tr {
+    border-bottom: 2px dashed #000;
+    cursor: default;
+    transition: all .125s ease-in-out;
+}
+
+#table tbody tr:hover {
+    /*background-color: rgba(129,208,177,.3);*/
+}
+
+#table tbody tr.event-bgColor {
+    background-color: rgba(255, 192, 203, .2);
+}
+
+#table tbody tr.default-bgColor {
+    background-color: #fff;
+}
+
+#table tbody tr.hover-bgColor {
+    background-color: rgba(255, 192, 203, .8);
+}
+
+#table tbody tr.selected-bgColor {
+    background-color: rgb(255, 192, 203);
+}
+
+.calendar {
+    position: relative;
+    font-family: 'Century Gothic', 'Segoe UI', Calibri, Arial;
+    font-size: 12px;
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+    z-index: 4;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    width: 250px;
+    color: #000;
+    text-align: center;
+    background-color: #FFF;
+}
+
+.calendar th,
+.calendar td {
+    text-align: center;
+    -webki-ttransition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+.calendar th:first-child,
+.calendar td:first-child {
+    margin-left: 5px;
+}
+
+.calendar span {
+    padding: 6px 4px;
+    display: block;
+}
+
+.calendar .month {
+    padding: 15px;
+}
+
+.calendar .pMDate, .calendar .nMDate {
+    color: #AAA;
+}
+
+.calendar .date, .calendar .pMDate, .calendar .nMDate, .calendar .month {
+    cursor: pointer;
+}
+
+.calendar .date.disabled, .calendar .pMDate.disabled, .calendar .nMDate.disabled {
+    cursor: not-allowed;
+}
+
+.calendar .date:not(.disabled):hover, .calendar .pMDate:not(.disabled):hover, .calendar .nMDate:not(.disabled):hover, .calendar .month:hover {
+    background-color: #E2E2E2;
+}
+
+.calendar .date:not(.disabled):active, .calendar .pMDate:not(.disabled):active, .calendar .nMDate:not(.disabled):active, .calendar .month:active {
+    background-color: #22A7F0;
+    color: #FFF;
+}
+
+.calendar .selected {
+    background-color: #22A7F0 !important;
+    color: #FFF !important;
+}
+
+.calendar tr:first-child th {
+    background-color: #FFF;
+    padding: 4px;
+    padding-top: 8px;
+    font-size: 14px;
+}
+
+.calendar tr:first-child th {
+    cursor: pointer;
+    color: #000;
+}
+
+.calendar tr:first-child th:hover {
+    color: #22A7F0;
+}
+
+.calendar tr:first-child th:active {
+    color: #22A7F0;
+}
+
+.calendar thead tr:nth-child(2) th {
+    color: #555;
+    padding: 8px 3px;
+}
+
+.calendar #prev, .calendar #next {
+    font-family: 'Times New Roman';
+    font-size: 20px;
+    padding: 0;
+}
+
+.calendar #today {
+    text-align: center;
+    cursor: pointer;
+    color: #22A7F0;
+    padding: 10px 6px;
+}
+
+.calendar #today:hover {
+    color: #80A7DD;
+}
+
+.calendar #today:active {
+    color: #000;
+}
+
+input[type=text] {
+    max-width: 150px;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 3px solid #f7bb85;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+    color: #2b2b2b;
+    font-size: 1.1em;
+}
+
+input[type=text]:focus {
+    border: 3px solid #555;
+}
+
+.input {
+    margin-top: 2%;
+    margin-left: 5%;
+    position: fixed;
+}
+#header{
+    background-color: #ffffff;
+    box-shadow: 0px 10px 19px 0px rgba(0, 0, 0, 0.2), 0px 3px 20px 0px rgba(0, 0, 0, 0.19);
+}
