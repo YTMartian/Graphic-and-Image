@@ -1,16 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white">
+        android:background="@android:color/white"
+        android:orientation="vertical">
 
-    <TextView
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/license_plate_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:paddingLeft="70sp"
+                android:paddingTop="100sp"
+                android:text="IP地址："
+                android:textColor="@color/colorGray"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        <EditText
+                android:id="@+id/ip_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:digits="0123456789."
+                android:ems="10"
+                android:inputType="number"
+                android:maxLength="15"
+                android:paddingTop="100sp" />
+
+
+    </LinearLayout>
+
+    <Button
+            android:id="@+id/change_ip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Settings Fragment"
-            android:textSize="30sp"
-            tools:ignore="MissingConstraints" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="100sp"
+            android:background="@drawable/ensure_style"
+            android:onClick="clickChangeIp"
+            android:text="确定"
+            android:textColor="@color/colorGray" />
+
+</LinearLayout>
