@@ -6,11 +6,20 @@
         android:layout_height="match_parent"
         android:background="@android:color/white">
 
+
     <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="About Fragment"
-            android:textSize="30sp"
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="应用名：停车收费系统\n版本号：v1.0.0\n开发人员：丁梦洁 梁菁 赵瑶瑶 王瑀治 董家佚"
+            android:layout_centerInParent="true"
+            android:textSize="20sp"
+            android:gravity="left"
+            android:textStyle="bold"
+            android:shadowDx="10"
+            android:shadowDy="10"
+            android:shadowRadius="10"
+            android:paddingTop="50dp"
+            android:paddingLeft="10sp"
             tools:ignore="MissingConstraints" />
 </androidx.constraintlayout.widget.ConstraintLayout>
