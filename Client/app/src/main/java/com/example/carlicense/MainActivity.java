@@ -62,17 +62,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (menuItem.getItemId()) {
             case R.id.nav_home:
                 menu.showMenu(true);
+                getSupportActionBar().setTitle("主页");//设置导航栏的text
                 //放入HomeFragment.
                 getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,
                         new HomeFragment()).commit();
                 break;
             case R.id.nav_settings:
                 menu.hideMenu(true);
+                getSupportActionBar().setTitle("设置");
                 getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,
                         new SettingsFragment()).commit();
                 break;
             case R.id.nav_about:
                 menu.hideMenu(true);
+                getSupportActionBar().setTitle("关于");
                 getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,
                         new AboutFragment()).commit();
                 break;
