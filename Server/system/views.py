@@ -19,6 +19,69 @@ def print_(request):
     return render(request, 'system/print.html')
 
 
+"""
+检查用户合法性
+post请求格式:
+            username:用户名
+            password:密码
+返回:用户存在json格式"True",否则"False"
+"""
+
+
+@csrf_exempt
+def check_user(request):
+    username = str(request.POST.get('username'))
+    password = str(request.POST.get('password'))
+    users = models.User.objects.all()
+    res = {'status': 'False'}
+    for user in users:
+        if user.name == username and user.password == password:
+            res['status'] = 'True'  # 如果用户存在，True
+            break
+    res = json.dumps(res, ensure_ascii = False, indent = 4)
+    return HttpResponse(res)
+
+
+"""
+注册
+post请求格式:
+            username:用户名
+            password:密码
+返回:用户存在则注册失败,返回json格式"False",否则"True"
+"""
+
+
+@csrf_exempt
+def register_user(request):
+    username = str(request.POST.get('username'))
+    password = str(request.POST.get('password'))
+    users = models.User.objects.all()
+    res = {'status': 'True'}
+    judge = False
+    for user in users:
+        if user.name == username:
+            res['status'] = 'False'  # 如果用户存在，False
+            judge = True
+            break
+    if judge:
+        new_user = models.User()
+        new_user.name = username
+        new_user.password = password
+        new_user.save()
+    res = json.dumps(res, ensure_ascii = False, indent = 4)
+    return HttpResponse(res)
+
+
+"""
+查询历史记录
+post请求格式:
+            username:用户名
+            license_plate:车牌号
+            start:开始日期
+            end:结束日期
+"""
+
+
 @csrf_exempt
 def get_history(request):
     username = str(request.POST.get('username'))

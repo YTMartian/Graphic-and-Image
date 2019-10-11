@@ -11,19 +11,18 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_weight="1"
-            android:background="@color/colorOrange"
+            android:background="@color/colorWhite"
             android:orientation="vertical">
 
         <TextView
-                android:id="@+id/ip_address_hint"
+                android:id="@+id/hint_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="70dp"
-                android:text="修改成功："
-                android:textColor="@color/colorWhite"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:text=""
+                android:textColor="@color/colorGray"
+                android:textSize="18sp" />
 
     </LinearLayout>
 

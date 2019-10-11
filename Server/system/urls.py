@@ -8,5 +8,7 @@ urlpatterns = [
     url(r'^print/$', views.print_, name = 'print'),
     url(r'^handle/$', views.handle, name = 'handle'),
     url(r'^get_history/$', views.get_history, name = 'get_history'),
+    url(r'^check_user/$', views.check_user, name = 'check_user'),
+    url(r'^register_user/$', views.register_user, name = 'register_user'),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

@@ -1,10 +1,10 @@
 package com.example.carlicense;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //AndroidManifest.xml里MainActivity要设置android:theme="@style/AppTheme.NoActionBar"
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -54,7 +55,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         myDialog = new Dialog(this);
-        server_ip = "192.168.137.1";
+        server_ip = "http://10.230.134.201:8000";
+        username = "test";
+        Intent intent = getIntent();
+        username = intent.getStringExtra("username"); //从LoginActivity传来的参数
     }
 
     @Override
@@ -122,7 +126,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             button.setLabelText("离开");
             pay_toll.setVisibility(View.GONE);
             myDialog.show();
-            license_plate_image.setImageURL("http://www.potatochip.cn/wallpaper-112.jpg");
+            /**
+             * 太坑了！！！一直app内不能联网，但avd是能的，每次重新run依然不能联网，需要
+             * 在avd内把app卸载了，再run app就能联网了，可能是部分文件没更新？
+             */
+            license_plate_image.setImageURL(server_ip+"/static/images/test.jpg");
         }
         is_get_in = !is_get_in;
     }
@@ -132,15 +140,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         myDialog.dismiss();
     }
 
-    //点击更改ip按钮
-    public void clickChangeIp(View view) {
-        EditText ip = findViewById(R.id.ip_address);
-        if (ip.getText().toString().isEmpty()) return;
-        server_ip = ip.getText().toString();
-        myDialog.setContentView(R.layout.popup_ip_ensure);
-        TextView ip_address_hint = myDialog.findViewById(R.id.ip_address_hint);
-        ip_address_hint.setText(ip_address_hint.getText() + server_ip);
-        myDialog.show();
-    }
+
 
 }
