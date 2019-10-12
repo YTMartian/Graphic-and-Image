@@ -1,3 +1,5 @@
+import time
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -32,12 +34,11 @@ post请求格式:
 def check_user(request):
     username = str(request.POST.get('username'))
     password = str(request.POST.get('password'))
-    users = models.User.objects.all()
+    user = models.User.objects.filter(name = username, password = password)
+    print(username, " ", password)
     res = {'status': 'False'}
-    for user in users:
-        if user.name == username and user.password == password:
-            res['status'] = 'True'  # 如果用户存在，True
-            break
+    if user:
+        res['status'] = 'True'  # 如果用户存在，True
     res = json.dumps(res, ensure_ascii = False, indent = 4)
     return HttpResponse(res)
 
@@ -55,15 +56,10 @@ post请求格式:
 def register_user(request):
     username = str(request.POST.get('username'))
     password = str(request.POST.get('password'))
-    users = models.User.objects.all()
-    res = {'status': 'True'}
-    judge = False
-    for user in users:
-        if user.name == username:
-            res['status'] = 'False'  # 如果用户存在，False
-            judge = True
-            break
-    if judge:
+    user = models.User.objects.filter(name = username)
+    res = {'status': 'False'}  # 用户存在
+    if not user:
+        res['status'] = 'True'  # 如果用户不存在，则True，并添加用户
         new_user = models.User()
         new_user.name = username
         new_user.password = password
@@ -107,26 +103,34 @@ def get_history(request):
         temp['状态'] = '离开' if history.state else '进入'
         temp['时间'] = str(history.time + datetime.timedelta(hours = 8))[:19]
         temp['收费'] = str(history.price)
+        temp['图片'] = str(history.photograph)
         res.append(temp.copy())
     res = json.dumps(res, ensure_ascii = False, indent = 4)
     return HttpResponse(res)
 
 
 # 存放当前检测结果
-result = []
+result = {}
+current_res_img = np.zeros((640, 480, 3), np.uint8)  # 初始化空白图片
+
+"""
+处理一帧，返回检测结果
+"""
 
 
 @csrf_exempt
 def handle(request):
     global result
+    global current_res_img
     data = request.POST.get('image')
     img = base64_to_cv2(data)
     res = HyperLPR_PlateRecogntion(img)
     if len(res) > 0:
-        result = res[0]
         crop_img = img[res[0][2][1]:res[0][2][3], res[0][2][0]:res[0][2][2]]  # 裁剪车牌区域
         color = detect_color(crop_img)
-        result.append(color)
+        # 保存当前检测结果
+        result['color'] = color
+        result['license_plate'] = res[0][0]
         img = cv2.rectangle(img, (res[0][2][0], res[0][2][1]), (res[0][2][2], res[0][2][3]), (0, 0, 255), 3)
         height = res[0][2][3] - res[0][2][1]
         width = res[0][2][2] - res[0][2][0]
@@ -134,10 +138,30 @@ def handle(request):
                             (res[0][2][0] + int(0.6 * width), res[0][2][1]), (0, 0, 255), -1)
         img = add_chinese_text(img, res[0][0] + color, res[0][2][0] + 1, res[0][2][1] - int(0.5 * height) + 2,
                                int(0.35 * height))
+        current_res_img = img
+    
     # cv2 image转base64
     nothing, buffer = cv2.imencode('.png', img)
     data = base64.b64encode(buffer)
     return HttpResponse(data, content_type = "image/png")  # 返回图片类型
+
+
+"""
+用户请求当前检测结果
+"""
+
+
+def get_current_result(request):
+    global result
+    global current_res_img
+    current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    result['time'] = current_time
+    time_stamp = str(time.time())  # 转换为时间戳
+    # 保存图片，注意路径
+    cv2.imwrite(os.getcwd() + '\\system\\static\\images\\' + time_stamp + '.jpg', current_res_img)  # 以时间戳命名图片
+    # print(os.getcwd() + '\\system\\static\\images\\' + time_stamp + '.jpg')
+    result['image'] = time_stamp + '.jpg'
+    return HttpResponse(json.dumps(result, ensure_ascii = False, indent = 4))
 
 
 # base64格式的字符串转换为opencv能处理的图片

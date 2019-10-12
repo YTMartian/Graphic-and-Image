@@ -1,5 +1,6 @@
 package com.example.carlicense;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import com.example.carlicense.ui.settings.SettingsFragment;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     boolean is_get_in = false;
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         myDialog = new Dialog(this);
-        server_ip = "http://10.230.134.201:8000";
+        server_ip = "http://10.230.238.189:8000";
         username = "test";
         Intent intent = getIntent();
         username = intent.getStringExtra("username"); //从LoginActivity传来的参数
@@ -104,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     //点击get_in按钮
+    @SuppressLint("SetTextI18n")
     public void clickGetIn(View view) {
         FloatingActionButton button = findViewById(R.id.get_in);
         //弹出确认框
@@ -120,17 +123,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             button.setLabelText("进入");
             pay_toll.setVisibility(View.VISIBLE);
             myDialog.show();
+
             license_plate_image.setImageURL("http://www.potatochip.cn/wallpaper-118.jpg");
+
         } else {
             button.setImageResource(R.drawable.ic_get_out);
             button.setLabelText("离开");
             pay_toll.setVisibility(View.GONE);
             myDialog.show();
-            /**
-             * 太坑了！！！一直app内不能联网，但avd是能的，每次重新run依然不能联网，需要
-             * 在avd内把app卸载了，再run app就能联网了，可能是部分文件没更新？
-             */
-            license_plate_image.setImageURL(server_ip+"/static/images/test.jpg");
+
+            ServerTools serverTools = new ServerTools(server_ip);
+            String json = "";
+            try {
+                json = serverTools.doGet("/system/get_current_result/");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (!json.isEmpty()) {
+                try {
+                    //处理json数据
+                    JSONObject jsonObject = new JSONObject(json);
+                    String color = jsonObject.optString("color");
+                    color = color.equals("蓝") ? "大车" : "小车";
+                    String license_plate = jsonObject.optString("license_plate");
+                    String time = jsonObject.optString("time");
+                    String image = jsonObject.optString("image");
+                    /**
+                     * 太坑了！！！一直app内不能联网，但avd是能的，每次重新run依然不能联网，需要
+                     * 在avd内把app卸载了，再run app就能联网了，可能是部分文件没更新？
+                     */
+                    license_plate_image.setImageURL(server_ip + "/static/images/" + image);
+                    license_plate_text.setText(license_plate_text.getText() + license_plate);
+                    car_type.setText(car_type.getText() + color);
+                    now_time.setText(now_time.getText() + time);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
         is_get_in = !is_get_in;
     }
@@ -139,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void clickEnsure(View view) {
         myDialog.dismiss();
     }
-
 
 
 }

@@ -10,5 +10,6 @@ urlpatterns = [
     url(r'^get_history/$', views.get_history, name = 'get_history'),
     url(r'^check_user/$', views.check_user, name = 'check_user'),
     url(r'^register_user/$', views.register_user, name = 'register_user'),
+    url(r'^get_current_result/$', views.get_current_result, name = 'get_current_result'),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

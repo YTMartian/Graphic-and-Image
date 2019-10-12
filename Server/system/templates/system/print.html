@@ -81,9 +81,10 @@
                     '            <th>时间</th>\n' +
                     '            <th>收费</th>\n' +
                     '        </tr>';
-                for (let i = 0, l = json.length; i < l; i++) {
+                for (let i = 0, l = json.length, j = 0; i < l; i++) {
                     data += '<tr class="tr-style">';
                     for (let key in json[i]) {
+                        if (key === '图片') break;
                         data += '<td>' + json[i][key] + '</td>';
                     }
                     data += '</tr>';
