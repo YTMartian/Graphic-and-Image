@@ -1,5 +1,5 @@
 import time
-
+from django.db.models import Max
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -24,8 +24,9 @@ def print_(request):
 # 存放当前检测结果
 result = {}
 get_in_result = {}
-current_res_img = np.zeros((10, 5, 3), np.uint8)  # 初始化空白图片
+current_res_img = np.zeros((50, 25, 3), np.uint8)  # 初始化空白图片
 current_username = ''
+is_get_in_or_out = False  # 相当于进程控制
 
 """
 检查用户合法性
@@ -126,11 +127,16 @@ def get_history(request):
 def handle(request):
     global result
     global current_res_img
+    # 如果正在处理get_in 和get_out，则直接返回上一检测图片
+    if is_get_in_or_out:
+        nothing, buffer = cv2.imencode('.png', current_res_img)
+        data = base64.b64encode(buffer)
+        return HttpResponse(data, content_type = "image/png")  # 返回图片类型
     data = request.POST.get('image')
     img = base64_to_cv2(data)
     res = HyperLPR_PlateRecogntion(img)
     # initialize
-    current_res_img = np.zeros((10, 5, 3), np.uint8)
+    current_res_img = np.zeros((50, 25, 3), np.uint8)
     result['color'] = ''
     result['license_plate'] = ''
     if len(res) > 0:
@@ -159,10 +165,14 @@ def handle(request):
 """
 
 
+@csrf_exempt
 def get_current_result(request):
     global result
     global current_res_img
     global get_in_result
+    global is_get_in_or_out
+    is_get_in_or_out = True
+    state = str(request.POST.get('username'))  # 用username来保存是进入还是离开，懒得改了
     try:
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         result['time'] = current_time
@@ -171,11 +181,14 @@ def get_current_result(request):
         cv2.imwrite(os.getcwd() + '\\system\\static\\images\\' + time_stamp + '.jpg', current_res_img)  # 以时间戳命名图片
         # print(os.getcwd() + '\\system\\static\\images\\' + time_stamp + '.jpg')
         result['image'] = time_stamp + '.jpg'
-        result['price'] = calculate_price(current_time)
+        result['price'] = 0.0
+        if state == "False":
+            result['price'] = calculate_price(result['time'])
         get_in_result = result
         return HttpResponse(json.dumps(result, ensure_ascii = False, indent = 4))
     except Exception as e:
         print(e, " error 2")
+        return HttpResponse(json.dumps(result, ensure_ascii = False, indent = 4))
 
 
 """
@@ -187,6 +200,8 @@ def get_current_result(request):
 def get_in_and_out(request):
     global get_in_result
     global result
+    global is_get_in_or_out
+    global current_res_img
     try:
         state = str(request.POST.get('username'))  # 用username来保存是进入还是离开，懒得改了
         new_history = models.History()
@@ -194,13 +209,22 @@ def get_in_and_out(request):
         new_history.photograph = get_in_result['image']
         new_history.license_plate = get_in_result['license_plate']
         new_history.type = '大车' if get_in_result['color'] == '黄' else '小车'
-        new_history.state = False if state == "False" else True
+        new_history.state = True if state == "False" else False
         new_history.price = get_in_result['price']
         new_history.time = get_in_result['time']
+        if state == "False":
+            new_history.price = calculate_price(get_in_result['time'])
+        img = cv2.imread(os.getcwd() + '\\system\\static\\images\\' + get_in_result['image'])
+        if len(img) < 100:
+            is_get_in_or_out = False
+            return HttpResponse(json.dumps({'state': 'failed'}, ensure_ascii = False, indent = 4))
         new_history.save()
-        return HttpResponse(json.dumps({'state': 'success'}, ensure_ascii = False, indent = 4))
+        is_get_in_or_out = False
+        return HttpResponse(
+                json.dumps({'state': 'success', 'price': new_history.price}, ensure_ascii = False, indent = 4))
     except Exception as e:
         print(e, " error 1")
+        is_get_in_or_out = False
         return HttpResponse(json.dumps({'state': 'failed'}, ensure_ascii = False, indent = 4))
 
 
@@ -209,10 +233,44 @@ def get_in_and_out(request):
 """
 
 
-def calculate_price(get_in_time):
-    last_get_in_history = models.History.objects.filter(name = current_username)
-    last_get_in_history = last_get_in_history[0]
-    last_get_in_time = last_get_in_history.time
+def calculate_price(get_out_time):
+    get_in_histories = models.History.objects.filter(name = current_username)
+    # 查询最新进入时间
+    get_in_time = get_in_histories[0].time
+    for i in get_in_histories:
+        if i.time > get_in_time:
+            get_in_time = i.time
+    get_out_time = datetime.datetime.strptime(get_out_time, '%Y-%m-%d %H:%M:%S')
+    get_in_time = get_in_time.replace(tzinfo = None)  # 解决时区问题，否则后面连加减都无法进行
+    get_out_time = get_out_time.replace(tzinfo = None)
+    get_in_time += datetime.timedelta(hours = 8)  # 不能直接hour加8
+    # get_out_time += datetime.timedelta(hours = 8) #传进来的get_out_time不用加！！
+    delta_time = get_out_time - get_in_time
+    delta_time = delta_time.seconds  # 两个时间相差多少秒
+    print(get_in_time, " ", get_out_time)
+    print(delta_time, " *********************************************************")
+    price = 0.0
+    price_standard = models.PriceStandard.objects.all()[0]
+    # 如果小于一小时，按一小时计
+    get_in_time_hour = get_in_time.hour
+    get_out_time_hour = get_out_time.hour
+    if delta_time <= 3600:
+        return price_standard.first_hour_price
+    else:
+        get_in_time_hour += 1
+    # 如果停了超过一天，就先加上整数天的price
+    if delta_time > 86400:
+        days = int(delta_time / 86400)
+        price += days * (price_standard.night_time_price * 12 + price_standard.day_time_price * 12)
+        delta_time /= 86400
+    # 计算每小时的费用
+    while get_in_time_hour < get_out_time_hour:
+        # 夜间价格
+        if get_in_time_hour > 19 or get_in_time_hour < 7:
+            price += price_standard.night_time_price
+        else:
+            price += price_standard.day_time_price
+    return price
 
 
 # base64格式的字符串转换为opencv能处理的图片

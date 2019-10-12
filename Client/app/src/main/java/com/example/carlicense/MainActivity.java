@@ -3,10 +3,12 @@ package com.example.carlicense;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -108,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //点击get_in按钮
     @SuppressLint("SetTextI18n")
     public void clickGetIn(View view) {
-        FloatingActionButton button = findViewById(R.id.get_in);
         //弹出确认框
         myDialog.setContentView(R.layout.popup);
         //注意应在myDialog下find，否则就是空指针错误
@@ -121,7 +122,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ServerTools serverTools = new ServerTools(server_ip);
         String json = "";
         try {
-            json = serverTools.doGet("/system/get_current_result/");
+            if (is_get_in) {
+                //这里其实应该写"True"，懒得改了。。。
+                json = serverTools.doPost("False", "", "/system/get_current_result/");
+            } else {
+                json = serverTools.doPost("True", "", "/system/get_current_result/");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -130,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //处理json数据
                 JSONObject jsonObject = new JSONObject(json);
                 String color = jsonObject.optString("color");
-                color = color.equals("蓝") ? "大车" : "小车";
+                color = color.equals("黄") ? "大车" : color.equals("蓝") ? "小车" : "";
                 String license_plate = jsonObject.optString("license_plate");
                 String time = jsonObject.optString("time");
                 String image = jsonObject.optString("image");
@@ -144,24 +150,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 car_type.setText(car_type.getText() + color);
                 now_time.setText(now_time.getText() + time);
                 pay_toll.setText(pay_toll.getText() + price);
+                if (is_get_in) {
+                    pay_toll.setVisibility(View.VISIBLE);
+                } else {
+                    pay_toll.setVisibility(View.GONE);
+                }
+                myDialog.show();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        //更改按钮图标和文字
-        if (is_get_in) {
-            button.setImageResource(R.drawable.ic_get_in);
-            button.setLabelText("进入");
-            pay_toll.setVisibility(View.VISIBLE);
-            myDialog.show();
-        } else {
-            button.setImageResource(R.drawable.ic_get_out);
-            button.setLabelText("离开");
-            pay_toll.setVisibility(View.GONE);
-            myDialog.show();
-        }
-        is_get_in = !is_get_in;
+
     }
 
     //点击确定按钮
@@ -190,15 +190,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
         myDialog.dismiss();
-        if (state.equals("failed")) showHint("保存失败！未检测到车牌");
+        if (state.equals("failed")) {
+            showHint("保存失败！未检测到车牌", Boolean.FALSE);
+        } else {
+            FloatingActionButton button = findViewById(R.id.get_in);
+            TextView pay_toll = myDialog.findViewById(R.id.pay_toll);
+            //更改按钮图标和文字
+            if (is_get_in) {
+                button.setImageResource(R.drawable.ic_get_in);
+                button.setLabelText("进入");
+            } else {
+                button.setImageResource(R.drawable.ic_get_out);
+                button.setLabelText("离开");
+            }
+            is_get_in = !is_get_in;
+            showHint("", true);
+        }
     }
 
     //弹窗信息显示
-    public void showHint(String s) {
+    public void showHint(String s, Boolean play_video) {
         myDialog.setContentView(R.layout.popup_hint);
+        //播放视频
+        VideoView videoView = myDialog.findViewById(R.id.railing_video);
+        videoView.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.railing));
         TextView hint = myDialog.findViewById(R.id.hint_text);
         hint.setText(s);
+        if (play_video) {
+            videoView.setVisibility(View.VISIBLE);
+        }else{
+            videoView.setVisibility(View.GONE);
+        }
         myDialog.show();
+        if (play_video) {
+            videoView.requestFocus();
+            videoView.start();
+        }
     }
 
 }

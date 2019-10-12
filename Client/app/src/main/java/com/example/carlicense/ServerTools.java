@@ -32,8 +32,8 @@ class ServerTools {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             //使用POST方法访问网络
             connection.setRequestMethod("POST");
-            //超时时间为10秒
-            connection.setConnectTimeout(10000);
+            //超时时间
+            connection.setConnectTimeout(5000);
             connection.setDoOutput(true);
             OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
             out.write(parameters);
@@ -59,8 +59,8 @@ class ServerTools {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             //使用GET方法访问网络
             connection.setRequestMethod("GET");
-            //超时时间为10秒
-            connection.setConnectTimeout(10000);
+            //超时时间
+            connection.setConnectTimeout(5000);
             InputStream inputStream = connection.getInputStream();
             byte[] data = StreamTool.read(inputStream);
             response = new String(data, "utf-8");
