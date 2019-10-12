@@ -26,5 +26,7 @@ IMPLEMENTED IN PYTHON, INCLUDING FRONT-END WEB FOR ADMINISTRATOR AND PROCESSING 
 
 # HOW TO RUN?
 1.run django: python manage.py runserver 0.0.0.0:8000
+
 2.find and change two places of variable "server_ip", change it to your local ipv4 address, you can find it in powershell using command "ipconfig /all"
+
 3.run Client APP
