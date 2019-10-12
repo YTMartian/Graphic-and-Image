@@ -117,57 +117,88 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView car_type = myDialog.findViewById(R.id.car_type);
         TextView now_time = myDialog.findViewById(R.id.now_time);
         TextView pay_toll = myDialog.findViewById(R.id.pay_toll);
+        //向服务器请求当前结果
+        ServerTools serverTools = new ServerTools(server_ip);
+        String json = "";
+        try {
+            json = serverTools.doGet("/system/get_current_result/");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (!json.isEmpty()) {
+            try {
+                //处理json数据
+                JSONObject jsonObject = new JSONObject(json);
+                String color = jsonObject.optString("color");
+                color = color.equals("蓝") ? "大车" : "小车";
+                String license_plate = jsonObject.optString("license_plate");
+                String time = jsonObject.optString("time");
+                String image = jsonObject.optString("image");
+                String price = jsonObject.optString("price");
+                /**
+                 * 太坑了！！！一直app内不能联网，但avd是能的，每次重新run依然不能联网，需要
+                 * 在avd内把app卸载了，再run app就能联网了，可能是部分文件没更新？
+                 */
+                license_plate_image.setImageURL(server_ip + "/static/images/" + image);
+                license_plate_text.setText(license_plate_text.getText() + license_plate);
+                car_type.setText(car_type.getText() + color);
+                now_time.setText(now_time.getText() + time);
+                pay_toll.setText(pay_toll.getText() + price);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         //更改按钮图标和文字
         if (is_get_in) {
             button.setImageResource(R.drawable.ic_get_in);
             button.setLabelText("进入");
             pay_toll.setVisibility(View.VISIBLE);
             myDialog.show();
-
-            license_plate_image.setImageURL("http://www.potatochip.cn/wallpaper-118.jpg");
-
         } else {
             button.setImageResource(R.drawable.ic_get_out);
             button.setLabelText("离开");
             pay_toll.setVisibility(View.GONE);
             myDialog.show();
-
-            ServerTools serverTools = new ServerTools(server_ip);
-            String json = "";
-            try {
-                json = serverTools.doGet("/system/get_current_result/");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (!json.isEmpty()) {
-                try {
-                    //处理json数据
-                    JSONObject jsonObject = new JSONObject(json);
-                    String color = jsonObject.optString("color");
-                    color = color.equals("蓝") ? "大车" : "小车";
-                    String license_plate = jsonObject.optString("license_plate");
-                    String time = jsonObject.optString("time");
-                    String image = jsonObject.optString("image");
-                    /**
-                     * 太坑了！！！一直app内不能联网，但avd是能的，每次重新run依然不能联网，需要
-                     * 在avd内把app卸载了，再run app就能联网了，可能是部分文件没更新？
-                     */
-                    license_plate_image.setImageURL(server_ip + "/static/images/" + image);
-                    license_plate_text.setText(license_plate_text.getText() + license_plate);
-                    car_type.setText(car_type.getText() + color);
-                    now_time.setText(now_time.getText() + time);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
         }
         is_get_in = !is_get_in;
     }
 
     //点击确定按钮
     public void clickEnsure(View view) {
+        String state = "success";
+        if (is_get_in) {
+            //记录进入
+            ServerTools serverTools = new ServerTools(server_ip);
+            try {
+                String json = serverTools.doPost("False", "", "/system/get_in_and_out/");
+                JSONObject jsonObject = new JSONObject(json);
+                state = jsonObject.optString("state");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            //记录离开
+            ServerTools serverTools = new ServerTools(server_ip);
+            try {
+                String json = serverTools.doPost("True", "", "/system/get_in_and_out/");
+                JSONObject jsonObject = new JSONObject(json);
+                state = jsonObject.optString("state");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         myDialog.dismiss();
+        if (state.equals("failed")) showHint("保存失败！未检测到车牌");
     }
 
+    //弹窗信息显示
+    public void showHint(String s) {
+        myDialog.setContentView(R.layout.popup_hint);
+        TextView hint = myDialog.findViewById(R.id.hint_text);
+        hint.setText(s);
+        myDialog.show();
+    }
 
 }

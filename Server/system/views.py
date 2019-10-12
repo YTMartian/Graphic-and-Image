@@ -21,6 +21,12 @@ def print_(request):
     return render(request, 'system/print.html')
 
 
+# 存放当前检测结果
+result = {}
+get_in_result = {}
+current_res_img = np.zeros((10, 5, 3), np.uint8)  # 初始化空白图片
+current_username = ''
+
 """
 检查用户合法性
 post请求格式:
@@ -32,13 +38,15 @@ post请求格式:
 
 @csrf_exempt
 def check_user(request):
+    global current_username
     username = str(request.POST.get('username'))
     password = str(request.POST.get('password'))
     user = models.User.objects.filter(name = username, password = password)
-    print(username, " ", password)
+    # print(username, " ", password)
     res = {'status': 'False'}
     if user:
         res['status'] = 'True'  # 如果用户存在，True
+        current_username = username
     res = json.dumps(res, ensure_ascii = False, indent = 4)
     return HttpResponse(res)
 
@@ -109,10 +117,6 @@ def get_history(request):
     return HttpResponse(res)
 
 
-# 存放当前检测结果
-result = {}
-current_res_img = np.zeros((640, 480, 3), np.uint8)  # 初始化空白图片
-
 """
 处理一帧，返回检测结果
 """
@@ -125,6 +129,10 @@ def handle(request):
     data = request.POST.get('image')
     img = base64_to_cv2(data)
     res = HyperLPR_PlateRecogntion(img)
+    # initialize
+    current_res_img = np.zeros((10, 5, 3), np.uint8)
+    result['color'] = ''
+    result['license_plate'] = ''
     if len(res) > 0:
         crop_img = img[res[0][2][1]:res[0][2][3], res[0][2][0]:res[0][2][2]]  # 裁剪车牌区域
         color = detect_color(crop_img)
@@ -154,14 +162,57 @@ def handle(request):
 def get_current_result(request):
     global result
     global current_res_img
-    current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    result['time'] = current_time
-    time_stamp = str(time.time())  # 转换为时间戳
-    # 保存图片，注意路径
-    cv2.imwrite(os.getcwd() + '\\system\\static\\images\\' + time_stamp + '.jpg', current_res_img)  # 以时间戳命名图片
-    # print(os.getcwd() + '\\system\\static\\images\\' + time_stamp + '.jpg')
-    result['image'] = time_stamp + '.jpg'
-    return HttpResponse(json.dumps(result, ensure_ascii = False, indent = 4))
+    global get_in_result
+    try:
+        current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        result['time'] = current_time
+        time_stamp = str(time.time())  # 转换为时间戳
+        # 保存图片，注意路径
+        cv2.imwrite(os.getcwd() + '\\system\\static\\images\\' + time_stamp + '.jpg', current_res_img)  # 以时间戳命名图片
+        # print(os.getcwd() + '\\system\\static\\images\\' + time_stamp + '.jpg')
+        result['image'] = time_stamp + '.jpg'
+        result['price'] = calculate_price(current_time)
+        get_in_result = result
+        return HttpResponse(json.dumps(result, ensure_ascii = False, indent = 4))
+    except Exception as e:
+        print(e, " error 2")
+
+
+"""
+用户进入和离开，记录保存数据库
+"""
+
+
+@csrf_exempt
+def get_in_and_out(request):
+    global get_in_result
+    global result
+    try:
+        state = str(request.POST.get('username'))  # 用username来保存是进入还是离开，懒得改了
+        new_history = models.History()
+        new_history.name = current_username
+        new_history.photograph = get_in_result['image']
+        new_history.license_plate = get_in_result['license_plate']
+        new_history.type = '大车' if get_in_result['color'] == '黄' else '小车'
+        new_history.state = False if state == "False" else True
+        new_history.price = get_in_result['price']
+        new_history.time = get_in_result['time']
+        new_history.save()
+        return HttpResponse(json.dumps({'state': 'success'}, ensure_ascii = False, indent = 4))
+    except Exception as e:
+        print(e, " error 1")
+        return HttpResponse(json.dumps({'state': 'failed'}, ensure_ascii = False, indent = 4))
+
+
+"""
+计算费用
+"""
+
+
+def calculate_price(get_in_time):
+    last_get_in_history = models.History.objects.filter(name = current_username)
+    last_get_in_history = last_get_in_history[0]
+    last_get_in_time = last_get_in_history.time
 
 
 # base64格式的字符串转换为opencv能处理的图片
