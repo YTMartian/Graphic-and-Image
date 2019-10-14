@@ -42,14 +42,17 @@ public class LoginActivity extends AppCompatActivity {
         TextView login_password = findViewById(R.id.login_password);
         String username = login_username.getText().toString();
         String password = login_password.getText().toString();
-        if (checkUser(username, password)) {
+        int flag = checkUser(username, password);
+        if (flag == 1) {
             //启动MainActivity
             //https://stackoverflow.com/questions/4186021/how-to-start-new-activity-on-button-click
             Intent myIntent = new Intent(this, MainActivity.class);
             myIntent.putExtra("username", username); //Optional parameters
             startActivity(myIntent);
-        } else {
+        } else if (flag == 0) {
             showHint("登录失败！用户名或密码错误");
+        } else if (flag == -1) {
+            showHint("服务器连接失败！");
         }
 
     }
@@ -71,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             if (json.isEmpty()) {
-                showHint("注册失败！服务器拒绝工作");
+                showHint("注册失败！服务器连接失败！");
             } else {
                 try {
                     //处理json数据
@@ -93,8 +96,9 @@ public class LoginActivity extends AppCompatActivity {
 
     //验证用户
     @SuppressLint("SetTextI18n")
-    public Boolean checkUser(String username, String password) {
-        if (username.isEmpty() || password.isEmpty()) return false;
+    public int checkUser(String username, String password) {
+        //1表示成功 0表示验证失败，-1表示网络连接失败
+        if (username.isEmpty() || password.isEmpty()) return 0;
         ServerTools serverTools = new ServerTools(server_ip);
         String json = "";
         try {
@@ -103,17 +107,21 @@ public class LoginActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         if (json.isEmpty()) {
-            return false;
+            return -1;
         } else {
             try {
                 //处理json数据
                 JSONObject jsonObject = new JSONObject(json);
                 String status = jsonObject.optString("status");
 //                System.out.println(status+" ******DDDDDDDDDDDDDDDDDDDDD");
-                return status.equals("True");
+                if (status.equals("True")) {
+                    return 1;
+                } else {
+                    return 0;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
-                return false;
+                return -1;
             }
         }
     }
