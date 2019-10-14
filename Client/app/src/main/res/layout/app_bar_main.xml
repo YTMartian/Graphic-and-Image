@@ -75,9 +75,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_history"
-                app:fab_label="记录"
+                app:fab_label="历史"
                 app:fab_size="normal"
-                android:onClick="clickOpenCamera"/>
+                android:onClick="clickHistory"/>
 
         <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/get_in"

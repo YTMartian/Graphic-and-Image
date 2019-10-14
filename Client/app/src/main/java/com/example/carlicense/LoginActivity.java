@@ -3,11 +3,13 @@ package com.example.carlicense;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.VideoView;
 import androidx.appcompat.app.AppCompatActivity;
 import org.json.JSONObject;
 
@@ -47,10 +49,7 @@ public class LoginActivity extends AppCompatActivity {
             myIntent.putExtra("username", username); //Optional parameters
             startActivity(myIntent);
         } else {
-            myDialog.setContentView(R.layout.popup_hint);
-            TextView hint = myDialog.findViewById(R.id.hint_text);
-            hint.setText("登录失败！用户名或密码错误");
-            myDialog.show();
+            showHint("登录失败！用户名或密码错误");
         }
 
     }
@@ -122,6 +121,8 @@ public class LoginActivity extends AppCompatActivity {
     //弹窗信息显示
     public void showHint(String s) {
         myDialog.setContentView(R.layout.popup_hint);
+        VideoView videoView = myDialog.findViewById(R.id.railing_video);
+        videoView.setVisibility(View.GONE);
         TextView hint = myDialog.findViewById(R.id.hint_text);
         hint.setText(s);
         myDialog.show();

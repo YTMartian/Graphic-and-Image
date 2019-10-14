@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     //点击history按钮
-    public void clickOpenCamera(View view) {
+    public void clickHistory(View view) {
 
     }
 
@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         hint.setText(s);
         if (play_video) {
             videoView.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             videoView.setVisibility(View.GONE);
         }
         myDialog.show();
