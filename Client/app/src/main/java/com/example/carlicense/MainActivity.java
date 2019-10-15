@@ -194,7 +194,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             showHint("保存失败！未检测到车牌", Boolean.FALSE);
         } else {
             FloatingActionButton button = findViewById(R.id.get_in);
-            TextView pay_toll = myDialog.findViewById(R.id.pay_toll);
             //更改按钮图标和文字
             if (is_get_in) {
                 button.setImageResource(R.drawable.ic_get_in);
@@ -207,6 +206,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             showHint("", true);
         }
     }
+
 
     //弹窗信息显示
     public void showHint(String s, Boolean play_video) {
@@ -226,6 +226,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             videoView.requestFocus();
             videoView.start();
         }
+    }
+
+    public void clickPlaySettingsVideo(View view) {
+        VideoView videoView = findViewById(R.id.settings_video);
+        videoView.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.ape));
+        videoView.requestFocus();
+        videoView.start();
     }
 
 }
