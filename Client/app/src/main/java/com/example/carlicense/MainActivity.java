@@ -2,11 +2,16 @@ package com.example.carlicense;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.VideoView;
 import androidx.annotation.NonNull;
@@ -104,7 +109,76 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //点击history按钮
     public void clickHistory(View view) {
+        myDialog.setContentView(R.layout.popup_history_list);
+        ListView history_list = myDialog.findViewById(R.id.history_list);
+        //传入显示数据
+        String[] s1 = {"1570881218.7201777.jpg", "1570881256.841221.jpg", "1570881277.3629115.jpg", "1570881344.6166348.jpg"};
+        String[] s2 = {"ABCD1", "ABCD2", "ABCD3", "ABCD4"};
+        String[] s3 = {"大车", "小车", "大车", "小车"};
+        String[] s4 = {"今天", "昨天", "明天", "前天"};
+        String[] s5 = {"1.0", "1.0", "1.0", "1.0"};
 
+        ServerTools serverTools = new ServerTools(server_ip);
+        try {
+            String json = serverTools.doPost(this.username, "", "/system/get_history/");
+            StringBuilder sb = new StringBuilder(json);
+            //返回的数据是python列表，要将第一个和最后的[]替换为{}
+//            sb.setCharAt(0, '{');
+//            sb.setCharAt(sb.length() - 1, '}');
+//            json = new String(sb);
+            System.out.println(" fuck  " + json);
+            JSONObject jsonObject = new JSONObject(json);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+//        MyAdapter myAdapter = new MyAdapter(this, s1, s2, s3, s4, s5);
+//        history_list.setAdapter(myAdapter);
+        myDialog.show();
+
+    }
+
+    //history列表显示类
+    class MyAdapter extends ArrayAdapter<String> {
+        Context context;
+        String[] history_license_plate_image;
+        String[] history_license_plate_text;
+        String[] history_car_type;
+        String[] history_time;
+        String[] history_pay_toll;
+
+        MyAdapter(Context c, String[] s1, String[] s2, String[] s3, String[] s4, String[] s5) {
+            //父类构造函数这里，得加上第三和第四个参数，大概类似于标识符以示区分？
+            super(c, R.layout.row, R.id.history_license_plate_text, s2);
+            this.context = c;
+            this.history_license_plate_image = s1;
+            this.history_license_plate_text = s2;
+            this.history_car_type = s3;
+            this.history_time = s4;
+            this.history_pay_toll = s5;
+        }
+
+        @SuppressLint("SetTextI18n")
+        @NonNull
+        @Override
+        public View getView(int position, @NonNull View convertView, @NonNull ViewGroup parent) {
+            LayoutInflater layoutInflater =
+                    (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View row = layoutInflater.inflate(R.layout.row, parent, false);
+            MyImageView history_license_plate_image = row.findViewById(R.id.history_license_plate_image);
+            TextView history_license_plate_text = row.findViewById(R.id.history_license_plate_text);
+            TextView history_car_type = row.findViewById(R.id.history_car_type);
+            TextView history_time = row.findViewById(R.id.history_time);
+            TextView history_pay_toll = row.findViewById(R.id.history_pay_toll);
+
+            history_license_plate_image.setImageURL(server_ip + "/static/images/" + this.history_license_plate_image[position]);
+            history_license_plate_text.setText(history_license_plate_text.getText() + this.history_license_plate_text[position]);
+            history_car_type.setText(history_car_type.getText() + this.history_car_type[position]);
+            history_time.setText(history_time.getText() + this.history_time[position]);
+            history_pay_toll.setText(history_pay_toll.getText() + this.history_pay_toll[position] + "元");
+            return row;
+        }
     }
 
     //点击get_in按钮
@@ -149,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 license_plate_text.setText(license_plate_text.getText() + license_plate);
                 car_type.setText(car_type.getText() + color);
                 now_time.setText(now_time.getText() + time);
-                pay_toll.setText(pay_toll.getText() + price);
+                pay_toll.setText(pay_toll.getText() + price + "元");
                 if (is_get_in) {
                     pay_toll.setVisibility(View.VISIBLE);
                 } else {

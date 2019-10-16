@@ -89,10 +89,10 @@ post请求格式:
 
 @csrf_exempt
 def get_history(request):
-    username = str(request.POST.get('username'))
-    license_plate = str(request.POST.get('license_plate'))
-    start = str(request.POST.get('start'))
-    end = str(request.POST.get('end'))
+    username = str('' if request.POST.get('username') is None else request.POST.get('username'))
+    license_plate = str('' if request.POST.get('license_plate') is None else request.POST.get('license_plate'))
+    start = str('' if request.POST.get('start') is None else request.POST.get('start'))
+    end = str('' if request.POST.get('end') is None else request.POST.get('end'))
     histories = models.History.objects.all()
     res = []
     temp = {}
