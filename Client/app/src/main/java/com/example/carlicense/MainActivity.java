@@ -6,14 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.VideoView;
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -23,6 +24,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import com.alipay.sdk.app.PayTask;
 import com.example.carlicense.ui.about.AboutFragment;
 import com.example.carlicense.ui.home.HomeFragment;
 import com.example.carlicense.ui.settings.SettingsFragment;
@@ -32,16 +34,22 @@ import com.google.android.material.navigation.NavigationView;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     boolean is_get_in = false;
     Dialog myDialog;
     String server_ip;
     String username;
+
+    //支付宝api配置
+    private static final int SDK_PAY_FLAG = 1001;
+    private String RSA_PRIVATE = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCVF1O47kFcMQ/foBpHXFgc/CDPxNYKwbNoFl9TCVS76oPmocX8DYC2D3cLNYTN7hbyGkWICiUnOXE88J9Aoyflmng8cdUk8r8UxcubHi7F1RMmuqjJBxDIG+qouak/kSrdHjG9mYC/fEpj6UuDUzwBPnIh9CcW2hr+BKoyRSuaky6v3b2FBVgun8tmUKb5Kk2P2u4qryQyp6S7UieBKNnnsbz8lSFL9rqYbnFAqxURZQWqyEncQmll/ztFJBjZk7CeX/F+nnAtA8Ix0lV6ZL+Ya15l89BXe/dsjnilQ0G9+RcaFS6KJX0l3bjs77O/3rZjEgq8C07obg3cbEQvb0mZAgMBAAECggEAOrfENnpHbZq5CLbSgrZg0ZGPDqUUM4pUMTNWeaqcH6JeLnAaPInI3ms61ERQuJYDnXgxWEG+njMmYPzXi6p2ZRwwLIYcjv+3t+Oqq734Z9viPgeXwAyzVEyCX883VBzFR+7DYkvZhBDcb3sLTX5zjH3ej3bMClj99ns52LCbWrXwSmilTPpe87t12Hwhp9urMEA6WjJT1EHNJ7za1dzfbh2pFN2XrUvExUB/piuC97MlTMlpIJf7PIOjir5s81Ettue7e+1jJASv0V2HWuyrfaTEwknYtudlsn83x2ra+4FugpySF+lW4bIF7B6hTmrbqzR+LZZyb+KbkVYECpyA3QKBgQDWT2eVKHPeb1bB9h6WyWOBlusAA1vINAmgylZY5Zqtw7/xnLPmpO0qhPsM1Re2Y/ggd6l7wkrmPSJu+tnLDF1cZHEgePX4f0gJai9cWI9UHWQpN7oZ54Gi+2ZPsb6al0fw7KEG4Yu0J1s7T5zG4mKxdydNFEljAgMmFZ2PQ18dHwKBgQCyGAd5DODcqTF5rHqamxlGx+/a2TZv/nFAD3jj70c5aUCaV+ikgE1ad7YxUx2b66lJnNyXeL6c7qdMY/qVg1wRUSMckBkq/JhTPwTopL6S8TOZDABgDUpGYQVN8y9AuMYYqJaI1TVvLx66DhGy18osmAvu9UhDkvmTLzOAjrUKRwKBgQCuq6NKH+FobyiwB9Bgp52RlpbMuPAKmdcrFR8Rb3oFnGEKJOU/3DZtDFut1tRv1MT8eWtKsk3nn/Y7q/rtEpPZZQgLJmub8OmeuswFIS0YqqfjLEdjK5wuYWa/F6i5SQnapJKOEDCUUet6yOWH+CXmbK48lYdGyfIVDVMQ3CFekwKBgAaLK3sfJgP1k4PM+pRDrqITJpT79iwXRUH9T4vQduV9IIqLQFkK/cydKWyWiTf5aLbztIc8QISzoCIGamaj9PYN7SRXhxU1QsOMRTnnE7mCc0rkTf85fckoN3GtxcazA1RUnXNZoiT7rj1X1v6jPyJ0U7vr90PEWrc1vMa0d6JxAoGAYY0M7BznC7qWy883iAeKB5tiqAWtwTFol1iEdInjLHfMEpEb4bxw3aRK9P9oW67+I3WGFppQ/YkVhx1e2+0qHYuMyMNqkgjO9o1akCcBTNTpqq4xKHbpJl7lGu/8dUsjNR5Y892WiiBEDuZEES+dom5PZswx304TF5xuwVt6M4o=";
+    public static final String APPID = "2019101068204761";
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -70,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         myDialog = new Dialog(this);
-        server_ip = "http://10.230.134.201:8000";
+        server_ip = "http://10.230.238.189:8000";
         username = "test";
         Intent intent = getIntent();
         username = intent.getStringExtra("username"); //从LoginActivity传来的参数
@@ -146,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
         //反转ArrayList，将最新的记录显示在上边
-        for(ArrayList<String>i:s)Collections.reverse(i);
+        for (ArrayList<String> i : s) Collections.reverse(i);
         MyAdapter myAdapter = new MyAdapter(this, s[0], s[1], s[2], s[3], s[4]);
         history_list.setAdapter(myAdapter);
         myDialog.show();
@@ -286,6 +294,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (is_get_in) {
                 button.setImageResource(R.drawable.ic_get_in);
                 button.setLabelText("进入");
+                /**
+                 * 支付宝支付
+                 */
+                //秘钥验证的类型 true:RSA2 false:RSA
+                boolean rsa = false;
+                //构造支付订单参数列表
+                Map<String, String> params = OrderInfoUtil2_0.buildOrderParamMap(APPID, rsa);
+                //构造支付订单参数信息
+                String orderParam = OrderInfoUtil2_0.buildOrderParam(params);
+                //对支付参数信息进行签名
+                String sign = OrderInfoUtil2_0.getSign(params, RSA_PRIVATE, rsa);
+                //订单信息
+                final String orderInfo = orderParam + "&" + sign;
+                //异步处理
+                Runnable payRunnable = new Runnable() {
+
+                    @Override
+                    public void run() {
+                        //新建任务
+                        PayTask alipay = new PayTask(MainActivity.this);
+                        //获取支付结果
+                        Map<String, String> result = alipay.payV2(orderInfo, true);
+                        Message msg = new Message();
+                        msg.what = SDK_PAY_FLAG;
+                        msg.obj = result;
+                        mHandler.sendMessage(msg);
+                    }
+                };
+                // 必须异步调用
+                Thread payThread = new Thread(payRunnable);
+                payThread.start();
+
             } else {
                 button.setImageResource(R.drawable.ic_get_out);
                 button.setLabelText("离开");
@@ -322,5 +362,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         videoView.requestFocus();
         videoView.start();
     }
+
+    //参见支付宝api demo sdk:PayDemoActivity.java
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case SDK_PAY_FLAG:
+                    PayResult payResult = new PayResult((Map<String, String>) msg.obj);
+                    /**
+                     对于支付结果，请商户依赖服务端的异步通知结果。同步通知结果，仅作为支付结束的通知。
+                     */
+                    String resultInfo = payResult.getResult();
+                    Log.i("Pay", "Pay:" + resultInfo);
+                    String resultStatus = payResult.getResultStatus();
+                    // 判断resultStatus 为9000则代表支付成功
+                    if (TextUtils.equals(resultStatus, "9000")) {
+                        // 该笔订单是否真实支付成功，需要依赖服务端的异步通知。
+                        Toast.makeText(MainActivity.this, "支付成功", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // 该笔订单真实的支付结果，需要依赖服务端的异步通知。
+                        Toast.makeText(MainActivity.this, "支付失败", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+            }
+        }
+    };
 
 }
