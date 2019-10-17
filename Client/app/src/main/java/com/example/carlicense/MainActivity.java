@@ -31,6 +31,12 @@ import com.github.clans.fab.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     boolean is_get_in = false;
     Dialog myDialog;
@@ -64,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         myDialog = new Dialog(this);
-        server_ip = "http://10.230.238.189:8000";
+        server_ip = "http://10.230.134.201:8000";
         username = "test";
         Intent intent = getIntent();
         username = intent.getStringExtra("username"); //从LoginActivity传来的参数
@@ -111,30 +117,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void clickHistory(View view) {
         myDialog.setContentView(R.layout.popup_history_list);
         ListView history_list = myDialog.findViewById(R.id.history_list);
-        //传入显示数据
-        String[] s1 = {"1570881218.7201777.jpg", "1570881256.841221.jpg", "1570881277.3629115.jpg", "1570881344.6166348.jpg"};
-        String[] s2 = {"ABCD1", "ABCD2", "ABCD3", "ABCD4"};
-        String[] s3 = {"大车", "小车", "大车", "小车"};
-        String[] s4 = {"今天", "昨天", "明天", "前天"};
-        String[] s5 = {"1.0", "1.0", "1.0", "1.0"};
+        //传入显示数据,MyAdapter构造函数的的五个参数
+        ArrayList<String>[] s = new ArrayList[5];
+        for (int i = 0; i < 5; i++) s[i] = new ArrayList<>();
 
         ServerTools serverTools = new ServerTools(server_ip);
         try {
-            String json = serverTools.doPost(this.username, "", "/system/get_history/");
-            StringBuilder sb = new StringBuilder(json);
-            //返回的数据是python列表，要将第一个和最后的[]替换为{}
-//            sb.setCharAt(0, '{');
-//            sb.setCharAt(sb.length() - 1, '}');
-//            json = new String(sb);
-            System.out.println(" fuck  " + json);
-            JSONObject jsonObject = new JSONObject(json);
+            String jsons = serverTools.doPost(this.username, "", "/system/get_history/");
+            StringBuilder sb = new StringBuilder(jsons);
+            //不知道怎么把python server返回的json字符串转为java的json格式，所以直接正则匹配，对每一部分分别转json
+            sb.deleteCharAt(0);
+            sb.deleteCharAt(sb.length() - 1);//去掉收尾的大括号
+            jsons = new String(sb);
+            //正则匹配
+            Pattern p = Pattern.compile("\\{([^}])*\\}");
+            Matcher m = p.matcher(jsons);
+            while (m.find()) {
+                String json = m.group();
+                JSONObject jsonObject = new JSONObject(json);
+                s[0].add(jsonObject.optString("photograph"));
+                s[1].add(jsonObject.optString("license_plate"));
+                s[2].add(jsonObject.optString("type"));
+                s[3].add(jsonObject.optString("time"));
+                s[4].add(jsonObject.optString("price"));
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-//        MyAdapter myAdapter = new MyAdapter(this, s1, s2, s3, s4, s5);
-//        history_list.setAdapter(myAdapter);
+        //反转ArrayList，将最新的记录显示在上边
+        for(ArrayList<String>i:s)Collections.reverse(i);
+        MyAdapter myAdapter = new MyAdapter(this, s[0], s[1], s[2], s[3], s[4]);
+        history_list.setAdapter(myAdapter);
         myDialog.show();
 
     }
@@ -142,13 +156,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //history列表显示类
     class MyAdapter extends ArrayAdapter<String> {
         Context context;
-        String[] history_license_plate_image;
-        String[] history_license_plate_text;
-        String[] history_car_type;
-        String[] history_time;
-        String[] history_pay_toll;
+        ArrayList<String> history_license_plate_image;
+        ArrayList<String> history_license_plate_text;
+        ArrayList<String> history_car_type;
+        ArrayList<String> history_time;
+        ArrayList<String> history_pay_toll;
 
-        MyAdapter(Context c, String[] s1, String[] s2, String[] s3, String[] s4, String[] s5) {
+        MyAdapter(Context c, ArrayList<String> s1, ArrayList<String> s2, ArrayList<String> s3, ArrayList<String> s4, ArrayList<String> s5) {
             //父类构造函数这里，得加上第三和第四个参数，大概类似于标识符以示区分？
             super(c, R.layout.row, R.id.history_license_plate_text, s2);
             this.context = c;
@@ -172,11 +186,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             TextView history_time = row.findViewById(R.id.history_time);
             TextView history_pay_toll = row.findViewById(R.id.history_pay_toll);
 
-            history_license_plate_image.setImageURL(server_ip + "/static/images/" + this.history_license_plate_image[position]);
-            history_license_plate_text.setText(history_license_plate_text.getText() + this.history_license_plate_text[position]);
-            history_car_type.setText(history_car_type.getText() + this.history_car_type[position]);
-            history_time.setText(history_time.getText() + this.history_time[position]);
-            history_pay_toll.setText(history_pay_toll.getText() + this.history_pay_toll[position] + "元");
+            history_license_plate_image.setImageURL(server_ip + "/static/images/" + this.history_license_plate_image.get(position));
+            history_license_plate_text.setText(history_license_plate_text.getText() + this.history_license_plate_text.get(position));
+            history_car_type.setText(history_car_type.getText() + this.history_car_type.get(position));
+            history_time.setText(history_time.getText() + this.history_time.get(position));
+            history_pay_toll.setText(history_pay_toll.getText() + this.history_pay_toll.get(position) + "元");
             return row;
         }
     }

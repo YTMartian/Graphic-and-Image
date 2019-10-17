@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
-    public String server_ip = "http://10.230.238.189:8000";
+    public String server_ip = "http://10.230.134.201:8000";
     private Dialog myDialog;
 
     @Override

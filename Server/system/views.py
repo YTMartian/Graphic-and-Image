@@ -106,13 +106,13 @@ def get_history(request):
             continue
         if end != '' and str(history.time + datetime.timedelta(hours = 8))[:10] > end:
             continue
-        temp['用户名'] = str(history.name)
-        temp['车牌号'] = str(history.license_plate)
-        temp['车型'] = str(history.type)
-        temp['状态'] = '离开' if history.state else '进入'
-        temp['时间'] = str(history.time + datetime.timedelta(hours = 8))[:19]
-        temp['收费'] = str(history.price)
-        temp['图片'] = str(history.photograph)
+        temp['username'] = str(history.name)
+        temp['license_plate'] = str(history.license_plate)
+        temp['type'] = str(history.type)
+        temp['state'] = '离开' if history.state else '进入'
+        temp['time'] = str(history.time + datetime.timedelta(hours = 8))[:19]
+        temp['price'] = str(history.price)
+        temp['photograph'] = str(history.photograph)
         res.append(temp.copy())
     res = json.dumps(res, ensure_ascii = False, indent = 4)
     return HttpResponse(res)
